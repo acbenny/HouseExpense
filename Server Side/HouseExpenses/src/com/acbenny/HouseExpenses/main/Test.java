@@ -1,35 +1,28 @@
 package com.acbenny.HouseExpenses.main;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.acbenny.HouseExpenses.model.User;
+import com.acbenny.HouseExpenses.service.UserService;
 
 public class Test {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("HouseExpenses");
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		entityManager.getTransaction().begin();
+
+		ApplicationContext context;
+		context = new ClassPathXmlApplicationContext("Beans.xml");
+
+		UserService userService = (UserService) context.getBean("UserService");
 		
-		User user = new User();
-		user.setName("Shweta Gupta");
-		user.setUsername("SG");
-		user.setEmail("sfasdlkfkjas@bt.com");
-		user.setPwdSalt("temp pwd dsafsalt");
-		user.setPwdHash("temp pwd safashash");
-		entityManager.persist(user);
-		
-		entityManager.getTransaction().commit();
-		entityManager.close();
+		// userService.createUser("ACBENNY4", "Arun Benny2",
+		// "acbenny4@gmail.com", "Password");
+
+		userService.listUsers();
 		
 		System.out.println("End!!!");
-		entityManagerFactory.close();
 		
-		entityManager=entityManagerFactory.createEntityManager();
-		entityManager.getTransaction().begin();
+		((AbstractApplicationContext) context).close();
 		
 	}
 

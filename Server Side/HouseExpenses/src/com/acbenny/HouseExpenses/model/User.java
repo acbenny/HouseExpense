@@ -11,11 +11,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "EXP_USERS")
+@Table(name = "USERS")
 public class User {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@SequenceGenerator(name = "ID_SEQ", sequenceName = "ISEQ$$_92604", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ID_SEQ")
 	private Integer id;
 	
 	@Column(unique=true)
@@ -25,9 +26,7 @@ public class User {
 	private String name;
 	
 	@Basic (fetch=FetchType.LAZY)
-	private String pwdHash;
-	@Basic (fetch=FetchType.LAZY)
-	private String pwdSalt;
+	private String pwd;
 	
 	@Basic (fetch=FetchType.LAZY)
 	private String email;
@@ -53,17 +52,13 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPwdHash() {
-		return pwdHash;
+
+	public String getPwd() {
+		return pwd;
 	}
-	public void setPwdHash(String pwdHash) {
-		this.pwdHash = pwdHash;
-	}
-	public String getPwdSalt() {
-		return pwdSalt;
-	}
-	public void setPwdSalt(String pwdSalt) {
-		this.pwdSalt = pwdSalt;
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
 	}
 	public String getEmail() {
 		return email;
@@ -72,4 +67,8 @@ public class User {
 		this.email = email;
 	}
 	
+	@Override
+	public String toString() {
+		return "User" + id + ":" + name + " username:" + username + " email:" + email;
+	}
 }
