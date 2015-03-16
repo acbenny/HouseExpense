@@ -15,19 +15,19 @@ import javax.persistence.Table;
 public class User {
 
 	@Id
-	@SequenceGenerator(name = "ID_SEQ", sequenceName = "ISEQ$$_92604", allocationSize = 1)
+	@SequenceGenerator(name = "ID_SEQ", sequenceName = "USERS_ID_SEQ", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ID_SEQ")
 	private Integer id;
 	
-	@Column(unique=true)
+	@Column(unique = true, nullable = false)
 	private String username;
 	
-	@Basic (fetch=FetchType.LAZY)
 	private String name;
 	
 	@Basic (fetch=FetchType.LAZY)
 	private String pwd;
 	
+	@Column(unique = true, nullable = false)
 	@Basic (fetch=FetchType.LAZY)
 	private String email;
 	
@@ -66,9 +66,9 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "User" + id + ":" + name + " username:" + username + " email:" + email;
+		return "User [id=" + id + ", username=" + username + ", name=" + name + ", email=" + email + "]";
 	}
 }
