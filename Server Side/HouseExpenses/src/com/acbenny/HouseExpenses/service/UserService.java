@@ -43,4 +43,9 @@ public class UserService {
 			}
 		}
 	}
+
+	public void getUserByUsername(String username) {
+		User user = userDAO.getUserByUsername(username);
+		System.out.println(user.toString());
+	}
 }

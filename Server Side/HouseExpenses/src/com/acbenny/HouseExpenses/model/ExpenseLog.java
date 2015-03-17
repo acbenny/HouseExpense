@@ -3,7 +3,6 @@ package com.acbenny.HouseExpenses.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,8 +23,9 @@ public class ExpenseLog {
 
 	private Date datetime;
 
-	@Column(name = "ITEM_ID")
-	private Integer itemId;
+	@ManyToOne
+	@JoinColumn(name = "ITEM_ID")
+	private Item item;
 
 	private int quantity;
 
@@ -45,14 +45,6 @@ public class ExpenseLog {
 
 	public void setDatetime(Date datetime) {
 		this.datetime = datetime;
-	}
-
-	public Integer getItemId() {
-		return itemId;
-	}
-
-	public void setItemId(Integer itemId) {
-		this.itemId = itemId;
 	}
 
 	public int getQuantity() {
@@ -78,9 +70,5 @@ public class ExpenseLog {
 	public void setItem(Item item) {
 		this.item = item;
 	}
-
-	@ManyToOne
-	@JoinColumn(name = "ITEM_ID")
-	private Item item;
 
 }

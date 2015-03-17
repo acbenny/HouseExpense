@@ -33,7 +33,13 @@ public class User {
 	
 	public User() {
 	}
-	
+
+	/*
+	 * @OneToMany
+	 * 
+	 * @JoinColumn(name = "id", referencedColumnName = "USER_ID") private
+	 * List<Share> shareList;
+	 */
 	public Integer getId() {
 		return id;
 	}

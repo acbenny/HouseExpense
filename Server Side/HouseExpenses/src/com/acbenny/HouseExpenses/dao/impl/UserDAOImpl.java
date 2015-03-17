@@ -5,6 +5,9 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
@@ -44,9 +47,16 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
+	@Transactional
 	public User getUserByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
+
+		CriteriaQuery<User> cq = em.getCriteriaBuilder().createQuery(User.class);
+		Root<User> RootUser = cq.from(User.class);
+		cq.select(RootUser);
+		cq.where(RootUser.get("username").in(username));
+		TypedQuery<User> tq = em.createQuery(cq);
+		User user = tq.getSingleResult();
+		return user;
 	}
 
 	@Override

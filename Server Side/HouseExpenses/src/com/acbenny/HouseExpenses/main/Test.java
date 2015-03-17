@@ -18,7 +18,9 @@ public class Test {
 		// userService.createUser("ACBENNY4", "Arun Benny2",
 		// "acbenny4@gmail.com", "Password");
 
-		userService.listUsers();
+		userService.getUserByUsername("ACBENNY");
+
+		// userService.listUsers();
 		
 		System.out.println("End!!!");
 		
