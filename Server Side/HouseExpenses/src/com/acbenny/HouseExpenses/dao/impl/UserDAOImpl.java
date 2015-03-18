@@ -36,8 +36,19 @@ public class UserDAOImpl implements UserDAO {
 	@Override
 	@Transactional
 	public void createUser(User user) {
+		// try {
 		em.persist(user);
 		em.flush();
+		// } catch (PersistenceException e) {
+		// if ((e.getCause() != null) && (e.getCause() instanceof
+		// ConstraintViolationException)) {
+		// String constraintName = ((ConstraintViolationException)
+		// e.getCause()).getConstraintName();
+		// throw new Exception("Constraint Violated:" + constraintName);
+		// } else {
+		// throw e;
+		// }
+		// }
 	}
 
 	@Override

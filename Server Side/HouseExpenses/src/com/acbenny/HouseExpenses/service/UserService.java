@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.acbenny.HouseExpenses.dao.UserDAO;
@@ -30,7 +31,13 @@ public class UserService {
 		user.setName(name);
 		user.setEmail(email);
 		user.setPwd(password);
-		userDAO.createUser(user);
+		try {
+			userDAO.createUser(user);
+		}catch (DataIntegrityViolationException dataEx) {
+			translateIntegrityException(dataEx);
+		} catch (Exception e) {
+			System.out.println("Other Exception:" + e.getMessage());
+		}
 	}
 
 	public void listUsers() {
@@ -47,5 +54,13 @@ public class UserService {
 	public void getUserByUsername(String username) {
 		User user = userDAO.getUserByUsername(username);
 		System.out.println(user.toString());
+	}
+
+	private Exception translateIntegrityException(DataIntegrityViolationException ex) {
+		System.out.println(ex.getMessage());
+		ex.printStackTrace();
+		
+		return ex;
+
 	}
 }

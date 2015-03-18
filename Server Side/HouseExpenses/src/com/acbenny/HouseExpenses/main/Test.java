@@ -11,17 +11,22 @@ public class Test {
 	public static void main(String[] args) {
 
 		ApplicationContext context;
-		context = new ClassPathXmlApplicationContext("Beans.xml");
+		context = new ClassPathXmlApplicationContext("context.xml");
 
 		UserService userService = (UserService) context.getBean("UserService");
 		
-		// userService.createUser("ACBENNY4", "Arun Benny2",
-		// "acbenny4@gmail.com", "Password");
+		userService.createUser("ACBENNY4", "Arun Benny2", "acbenny4@gmail.com", "Password");
 
-		userService.getUserByUsername("ACBENNY");
+		// userService.getUserByUsername("ACBENNY");
 
-		// userService.listUsers();
+		userService.listUsers();
 		
+		// ItemService itemService = (ItemService)
+		// context.getBean("ItemService");
+
+		// itemService.createItem("Milk", "20.415");
+
+		// itemService.listItems();
 		System.out.println("End!!!");
 		
 		((AbstractApplicationContext) context).close();

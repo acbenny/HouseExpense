@@ -20,7 +20,7 @@ public class Item {
 	private Integer id;
 
 	@Column(unique = true, nullable = false)
-	private String itemname;
+	private String itemName;
 
 	public Integer getId() {
 		return id;
@@ -30,12 +30,12 @@ public class Item {
 		this.id = id;
 	}
 
-	public String getItemname() {
-		return itemname;
+	public String getItemName() {
+		return itemName;
 	}
 
-	public void setItemname(String itemname) {
-		this.itemname = itemname;
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
 	}
 
 	public BigDecimal getPrice() {
@@ -50,6 +50,6 @@ public class Item {
 
 	@Override
 	public String toString() {
-		return "Item [id=" + id + ", itemname=" + itemname + ", price=" + price + "]";
+		return "Item [id=" + id + ", itemName=" + itemName + ", price=" + price + "]";
 	}
 }
