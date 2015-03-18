@@ -4,6 +4,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.acbenny.HouseExpenses.exception.DAOException;
+import com.acbenny.HouseExpenses.model.Item;
+import com.acbenny.HouseExpenses.model.User;
+import com.acbenny.HouseExpenses.service.ItemService;
 import com.acbenny.HouseExpenses.service.UserService;
 
 public class Test {
@@ -13,14 +17,16 @@ public class Test {
 		ApplicationContext context;
 		context = new ClassPathXmlApplicationContext("context.xml");
 
-		UserService userService = (UserService) context.getBean("UserService");
-		
-		userService.createUser("ACBENNY4", "Arun Benny2", "acbenny4@gmail.com", "Password");
+		ItemService itemService = (ItemService) context.getBean("ItemService");
+		try {
+			Item item = itemService.getItem("Groceries", "");
+			System.out.println(item.toString());			
+		} catch (DAOException e) {
+			System.out.println(e.getMessage());
+		}
 
 		// userService.getUserByUsername("ACBENNY");
 
-		userService.listUsers();
-		
 		// ItemService itemService = (ItemService)
 		// context.getBean("ItemService");
 

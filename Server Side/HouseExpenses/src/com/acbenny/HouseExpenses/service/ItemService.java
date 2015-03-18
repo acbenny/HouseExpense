@@ -4,12 +4,18 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.acbenny.HouseExpenses.dao.ItemDAO;
+import com.acbenny.HouseExpenses.exception.DAOErrorCodes;
+import com.acbenny.HouseExpenses.exception.DAOException;
 import com.acbenny.HouseExpenses.model.Item;
+import com.acbenny.HouseExpenses.model.User;
 
 @Service("ItemService")
 public class ItemService {
@@ -26,12 +32,20 @@ public class ItemService {
 		this.itemDAO = itemDAO;
 	}
 	
-	public void createItem(String itemName, String price) {
-		BigDecimal bd = (new BigDecimal(price)).setScale(2, RoundingMode.HALF_UP);
+	public Item createItem(String itemName, String price) throws DAOException {
+		BigDecimal bd = null;
+		if (!(price == null || "".equals(price))) {
+			bd = (new BigDecimal(price)).setScale(2, RoundingMode.HALF_UP);
+		}
 		Item item = new Item();
 		item.setItemName(itemName);
 		item.setPrice(bd);
-		itemDAO.createItem(item);
+		try {
+			itemDAO.createItem(item);
+		}catch (DataIntegrityViolationException dataEx) {
+			translateIntegrityException(dataEx);
+		}
+		return item;
 	}
 
 	public void listItems() {
@@ -45,8 +59,25 @@ public class ItemService {
 		}
 	}
 
-	public void getItemByName(String itemname) {
-		Item item = itemDAO.getItemByName(itemname);
-		System.out.println(item.toString());
+	public Item getItem(String itemName,String price) throws DAOException {
+		Item item = null;
+		try {
+			item = itemDAO.getItemByName(itemName);
+		}catch (EmptyResultDataAccessException e) {
+			item = createItem(itemName, price);
+		}
+		return item;
+	}
+	
+	private void translateIntegrityException(DataIntegrityViolationException ex) throws DAOException {
+		if ((ex.getCause()!=null)&&(ex.getCause() instanceof ConstraintViolationException)) {
+			String constraintName = (((ConstraintViolationException)ex.getCause()).getConstraintName());
+			if (constraintName != null) {
+				if (constraintName.endsWith(User.getConstraintName("itemname"))) {
+					throw new DAOException(DAOErrorCodes.DUPLICATE_ITEM);
+				}
+			}
+		}
+		throw ex;
 	}
 }

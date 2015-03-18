@@ -2,12 +2,16 @@ package com.acbenny.HouseExpenses.service;
 
 import java.util.List;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.acbenny.HouseExpenses.dao.UserDAO;
+import com.acbenny.HouseExpenses.exception.DAOErrorCodes;
+import com.acbenny.HouseExpenses.exception.DAOException;
 import com.acbenny.HouseExpenses.model.User;
 
 @Service("UserService")
@@ -25,7 +29,7 @@ public class UserService {
 		this.userDAO = userDAO;
 	}
 
-	public void createUser(String username, String name, String email, String password) {
+	public User createUser(String username, String name, String email, String password) throws DAOException {
 		User user = new User();
 		user.setUsername(username);
 		user.setName(name);
@@ -35,9 +39,8 @@ public class UserService {
 			userDAO.createUser(user);
 		}catch (DataIntegrityViolationException dataEx) {
 			translateIntegrityException(dataEx);
-		} catch (Exception e) {
-			System.out.println("Other Exception:" + e.getMessage());
 		}
+		return user;
 	}
 
 	public void listUsers() {
@@ -51,16 +54,27 @@ public class UserService {
 		}
 	}
 
-	public void getUserByUsername(String username) {
-		User user = userDAO.getUserByUsername(username);
-		System.out.println(user.toString());
+	public User getUserByUsername(String username) throws DAOException {
+		User user = null;
+		try {
+			user = userDAO.getUserByUsername(username);
+		}catch (EmptyResultDataAccessException e) {
+			throw new DAOException(DAOErrorCodes.USER_NOT_FOUND);
+		}
+		return user;
 	}
 
-	private Exception translateIntegrityException(DataIntegrityViolationException ex) {
-		System.out.println(ex.getMessage());
-		ex.printStackTrace();
-		
-		return ex;
-
+	private void translateIntegrityException(DataIntegrityViolationException ex) throws DAOException {
+		if ((ex.getCause()!=null)&&(ex.getCause() instanceof ConstraintViolationException)) {
+			String constraintName = (((ConstraintViolationException)ex.getCause()).getConstraintName());
+			if (constraintName != null) {
+				if (constraintName.endsWith(User.getConstraintName("username"))) {
+					throw new DAOException(DAOErrorCodes.DUPLICATE_USERNAME);
+				}else if (constraintName.endsWith(User.getConstraintName("email"))) {
+					throw new DAOException(DAOErrorCodes.DUPLICATE_EMAIL);
+				}
+			}
+		}
+		throw ex;
 	}
 }

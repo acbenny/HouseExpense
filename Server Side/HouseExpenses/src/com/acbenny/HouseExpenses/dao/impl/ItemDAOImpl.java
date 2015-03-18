@@ -33,7 +33,6 @@ public class ItemDAOImpl implements ItemDAO {
 	@Transactional
 	public void createItem(Item item) {
 		em.persist(item);
-		em.flush();
 	}
 
 	@SuppressWarnings("unchecked")

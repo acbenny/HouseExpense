@@ -1,5 +1,7 @@
 package com.acbenny.HouseExpenses.model;
 
+import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -34,12 +37,9 @@ public class User {
 	public User() {
 	}
 
-	/*
-	 * @OneToMany
-	 * 
-	 * @JoinColumn(name = "id", referencedColumnName = "USER_ID") private
-	 * List<Share> shareList;
-	 */
+	@OneToMany(targetEntity=Share.class)
+	private List<Share> shareList;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -73,6 +73,16 @@ public class User {
 		this.email = email;
 	}
 
+	public static String getConstraintName(String column) {
+		if ("username".equalsIgnoreCase(column)) {
+			return "USERS_UK_USERNAME";
+		}else if ("email".equalsIgnoreCase(column)) {
+			return "USERS_UK_EMAIL";
+		}else {
+			return "";
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", name=" + name + ", email=" + email + "]";

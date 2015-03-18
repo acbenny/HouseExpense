@@ -36,19 +36,8 @@ public class UserDAOImpl implements UserDAO {
 	@Override
 	@Transactional
 	public void createUser(User user) {
-		// try {
 		em.persist(user);
 		em.flush();
-		// } catch (PersistenceException e) {
-		// if ((e.getCause() != null) && (e.getCause() instanceof
-		// ConstraintViolationException)) {
-		// String constraintName = ((ConstraintViolationException)
-		// e.getCause()).getConstraintName();
-		// throw new Exception("Constraint Violated:" + constraintName);
-		// } else {
-		// throw e;
-		// }
-		// }
 	}
 
 	@Override
@@ -74,6 +63,7 @@ public class UserDAOImpl implements UserDAO {
 	@Transactional
 	public List<User> getUserList() {
 		Query qry = em.createQuery("SELECT u FROM User u");
+		@SuppressWarnings("unchecked")
 		List<User> list = qry.getResultList();
 		return list;
 	}

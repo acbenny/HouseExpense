@@ -22,6 +22,9 @@ public class Item {
 	@Column(unique = true, nullable = false)
 	private String itemName;
 
+	@Column(nullable = true)
+	private BigDecimal price;
+
 	public Integer getId() {
 		return id;
 	}
@@ -46,8 +49,14 @@ public class Item {
 		this.price = price;
 	}
 
-	private BigDecimal price;
-
+	public static String getConstraintName(String column) {
+		if ("itemName".equalsIgnoreCase(column)) {
+			return "ITEMS_UK_ITEMNAME";
+		}else {
+			return "";
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "Item [id=" + id + ", itemName=" + itemName + ", price=" + price + "]";
