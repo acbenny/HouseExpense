@@ -37,7 +37,7 @@ public class User {
 	public User() {
 	}
 
-	@OneToMany(targetEntity=Share.class)
+	@OneToMany(mappedBy = "user", targetEntity = Share.class, fetch = FetchType.LAZY)
 	private List<Share> shareList;
 	
 	public Integer getId() {
@@ -73,6 +73,13 @@ public class User {
 		this.email = email;
 	}
 
+	public List<Share> getShareList() {
+		return shareList;
+	}
+
+	public void setShareList(List<Share> shareList) {
+		this.shareList = shareList;
+	}
 	public static String getConstraintName(String column) {
 		if ("username".equalsIgnoreCase(column)) {
 			return "USERS_UK_USERNAME";

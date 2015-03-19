@@ -1,6 +1,11 @@
 package com.acbenny.HouseExpenses.service;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +15,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.acbenny.HouseExpenses.dao.UserDAO;
-import com.acbenny.HouseExpenses.exception.DAOErrorCodes;
-import com.acbenny.HouseExpenses.exception.DAOException;
+import com.acbenny.HouseExpenses.exception.ErrorCodes;
+import com.acbenny.HouseExpenses.exception.ServiceException;
+import com.acbenny.HouseExpenses.model.Share;
 import com.acbenny.HouseExpenses.model.User;
 
 @Service("UserService")
@@ -29,7 +35,7 @@ public class UserService {
 		this.userDAO = userDAO;
 	}
 
-	public User createUser(String username, String name, String email, String password) throws DAOException {
+	public User createUser(String username, String name, String email, String password) throws ServiceException {
 		User user = new User();
 		user.setUsername(username);
 		user.setName(name);
@@ -54,24 +60,46 @@ public class UserService {
 		}
 	}
 
-	public User getUserByUsername(String username) throws DAOException {
+	public User getUserByUsername(String username) throws ServiceException {
 		User user = null;
 		try {
 			user = userDAO.getUserByUsername(username);
 		}catch (EmptyResultDataAccessException e) {
-			throw new DAOException(DAOErrorCodes.USER_NOT_FOUND);
+			throw new ServiceException(ErrorCodes.USER_NOT_FOUND);
 		}
 		return user;
 	}
 
-	private void translateIntegrityException(DataIntegrityViolationException ex) throws DAOException {
+	@Transactional
+	public void printExpenses(String userName) throws ServiceException {
+		User user = getUserByUsername(userName);
+		System.out.println("Expenses for " + userName);
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+		for (Share share : user.getShareList()) {
+			Date dt = share.getExpenseLog().getDatetime();
+			String itemName = share.getExpenseLog().getItem().getItemName();
+			BigDecimal totAmount = share.getExpenseLog().getAmount();
+			int shareMultiplier = share.getShareMultiplier();
+			int shareDivisor = share.getExpenseLog().getShareDivisor();
+			BigDecimal sharePortion = totAmount.multiply(new BigDecimal(
+					shareMultiplier));
+			sharePortion = sharePortion.divide(new BigDecimal(shareDivisor));
+			System.out.println(outputFormat.format(dt) + "----" + itemName
+					+ "----"
+					+ totAmount.toString() + "----" + shareMultiplier + "----"
+					+ shareDivisor + "----" + sharePortion.toString());
+			
+		}
+	}
+
+	private void translateIntegrityException(DataIntegrityViolationException ex) throws ServiceException {
 		if ((ex.getCause()!=null)&&(ex.getCause() instanceof ConstraintViolationException)) {
 			String constraintName = (((ConstraintViolationException)ex.getCause()).getConstraintName());
 			if (constraintName != null) {
 				if (constraintName.endsWith(User.getConstraintName("username"))) {
-					throw new DAOException(DAOErrorCodes.DUPLICATE_USERNAME);
+					throw new ServiceException(ErrorCodes.DUPLICATE_USERNAME);
 				}else if (constraintName.endsWith(User.getConstraintName("email"))) {
-					throw new DAOException(DAOErrorCodes.DUPLICATE_EMAIL);
+					throw new ServiceException(ErrorCodes.DUPLICATE_EMAIL);
 				}
 			}
 		}

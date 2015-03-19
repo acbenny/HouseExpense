@@ -2,13 +2,16 @@ package com.acbenny.HouseExpenses.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -21,16 +24,21 @@ public class ExpenseLog {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ID_SEQ")
 	private Integer id;
 
+	@ManyToOne
+	@JoinColumn(name = "LOGGED_BY")
+	private User loggedBy;
+
 	private Date datetime;
 
 	@ManyToOne
 	@JoinColumn(name = "ITEM_ID")
 	private Item item;
 
-	private int quantity;
-
 	private BigDecimal amount;
 
+	@OneToMany(mappedBy = "expenseLog", targetEntity = Share.class, fetch = FetchType.LAZY)
+	private List<Share> shareList;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -43,16 +51,8 @@ public class ExpenseLog {
 		return datetime;
 	}
 
-	public void setDatetime(Date datetime) {
-		this.datetime = datetime;
-	}
-
-	public int getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
+	public void setDatetime(Date dateTime) {
+		this.datetime = dateTime;
 	}
 
 	public BigDecimal getAmount() {
@@ -71,4 +71,27 @@ public class ExpenseLog {
 		this.item = item;
 	}
 
+	public User getLoggedBy() {
+		return loggedBy;
+	}
+
+	public void setLoggedBy(User loggedBy) {
+		this.loggedBy = loggedBy;
+	}
+
+	public List<Share> getShareList() {
+		return shareList;
+	}
+
+	public void setShareList(List<Share> shareList) {
+		this.shareList = shareList;
+	}
+
+	public int getShareDivisor() {
+		List<Share> shareList = getShareList();
+		int divisor = 0;
+		for (Share share : shareList)
+			divisor += share.getShareMultiplier();
+		return divisor;
+	}
 }

@@ -2,6 +2,7 @@ package com.acbenny.HouseExpenses.dao.impl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +24,7 @@ public class ShareDAOImpl implements ShareDAO {
 	}
 	
 	@Override
+	@Transactional
 	public void createShare(Share share) {
 		em.persist(share);
 	}

@@ -1,7 +1,6 @@
 package com.acbenny.HouseExpenses.service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 import org.hibernate.exception.ConstraintViolationException;
@@ -12,8 +11,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.acbenny.HouseExpenses.dao.ItemDAO;
-import com.acbenny.HouseExpenses.exception.DAOErrorCodes;
-import com.acbenny.HouseExpenses.exception.DAOException;
+import com.acbenny.HouseExpenses.exception.ErrorCodes;
+import com.acbenny.HouseExpenses.exception.ServiceException;
 import com.acbenny.HouseExpenses.model.Item;
 import com.acbenny.HouseExpenses.model.User;
 
@@ -32,10 +31,10 @@ public class ItemService {
 		this.itemDAO = itemDAO;
 	}
 	
-	public Item createItem(String itemName, String price) throws DAOException {
+	public Item createItem(String itemName, String price) throws ServiceException {
 		BigDecimal bd = null;
 		if (!(price == null || "".equals(price))) {
-			bd = (new BigDecimal(price)).setScale(2, RoundingMode.HALF_UP);
+			bd = (new BigDecimal(price)).setScale(2, BigDecimal.ROUND_HALF_UP);
 		}
 		Item item = new Item();
 		item.setItemName(itemName);
@@ -59,7 +58,7 @@ public class ItemService {
 		}
 	}
 
-	public Item getItem(String itemName,String price) throws DAOException {
+	public Item getItem(String itemName,String price) throws ServiceException {
 		Item item = null;
 		try {
 			item = itemDAO.getItemByName(itemName);
@@ -69,12 +68,12 @@ public class ItemService {
 		return item;
 	}
 	
-	private void translateIntegrityException(DataIntegrityViolationException ex) throws DAOException {
+	private void translateIntegrityException(DataIntegrityViolationException ex) throws ServiceException {
 		if ((ex.getCause()!=null)&&(ex.getCause() instanceof ConstraintViolationException)) {
 			String constraintName = (((ConstraintViolationException)ex.getCause()).getConstraintName());
 			if (constraintName != null) {
 				if (constraintName.endsWith(User.getConstraintName("itemname"))) {
-					throw new DAOException(DAOErrorCodes.DUPLICATE_ITEM);
+					throw new ServiceException(ErrorCodes.DUPLICATE_ITEM);
 				}
 			}
 		}
